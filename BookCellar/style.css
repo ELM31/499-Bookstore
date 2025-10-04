@@ -1,0 +1,76 @@
+html {
+  height: display;
+  width: display;
+  margin: auto;
+}
+
+body{
+  background-color: rgb(80, 46, 3);
+  height:100%;
+}
+main{
+  display:flex;
+  height:100%;
+}
+
+.BookCellar{
+  background-color: rgb(80, 46, 3);
+  height:100%;
+}
+
+.siteHead{
+    position: sticky;
+    top:0;
+    padding: 10px top 15px;
+    color:rgb(233, 181, 49);
+    display: flex;
+}
+
+.siteName{
+  text-align: left;
+  font-size: xx-large;
+  flex: 4;
+}
+
+.userLogin {
+  flex: 1;
+  border-left: 2px rgb(129, 100, 25);
+}
+.userLogin button{
+  display: block;
+  cursor: pointer;
+  background-color: rgb(233, 181, 49);
+  color: rgb(0, 0, 0);
+  border-bottom: rgb(129, 100, 25);
+  width: 100%;
+}
+
+.siteMenu{
+  position: sticky;
+  display:flex;
+}
+.siteMenu button{
+  flex:auto;
+  cursor:pointer;
+  background-color: rgb(233, 181, 49);
+  color: rgb(0, 0, 0);
+  border-bottom: rgb(129, 100, 25);
+}
+
+.forSalePreview{
+  flex:auto;
+  height: 100%;
+  color:rgb(233, 181, 49);
+}
+.forumPreview{
+  flex:auto;
+  border-right: 2px rgb(129, 100, 25);
+  height:100%;
+  color:rgb(233, 181, 49);
+}
+/*.FPItem{
+
+}
+.FSPItem{
+
+}*/ /*These two are going to be generated items pulled from the database */
