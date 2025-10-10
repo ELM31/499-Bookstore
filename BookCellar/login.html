@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - The Book Cellar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="login-body">
+    <a 
+        onclick="window.location.href='BCLanding.html'"
+        class = siteName>
+            The Book Cellar
+    </a>
+    <div class="login-box">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p>Don’t have an account? <a href="signup.html">Sign up</a></p>
+    </div>
+
+    <script>
+        // Temporary “fake” login for testing
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // For now, we’ll just check against dummy credentials
+            if (username === "test" && password === "1234") {
+                alert("Login successful!");
+                window.location.href = "BCLanding.html";
+            } else {
+                alert("Invalid credentials. Try 'test' / '1234'.");
+            }
+        });
+    </script>
+</body>
+</html>

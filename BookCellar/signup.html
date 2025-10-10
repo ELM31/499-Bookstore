@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up - The Book Cellar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="login-body">
+    <a 
+        onclick="window.location.href='BCLanding.html'"
+        class = siteName>
+            The Book Cellar
+    </a>
+    <div class="login-box">
+        <h2>Create an Account</h2>
+        <form id="signupForm">
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Email Address" required>
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+
+    <script>
+        document.getElementById("signupForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            // Simple password check for now
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            // Temporary "success" behavior for now
+            alert("Account created successfully for " + name + "!");
+            window.location.href = "login.html";  // Redirect to login page
+        });
+    </script>
+</body>
+</html>
