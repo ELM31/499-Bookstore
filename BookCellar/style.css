@@ -34,12 +34,12 @@ main{
   font-size: 4rem;
   font-weight: bold;
   text-align: center;
-  margin-top: 1rem;
   cursor: pointer;
   flex: 4;
   padding: 1rem;
   border-radius: 10px;
-  width: 300px;
+  width: 150px;
+  margin: 5px 10px 15px 20px;
 }
 
 .userLogin {
@@ -54,8 +54,9 @@ main{
   border-bottom: rgb(129, 100, 25);
   width: 100%;
   flex: 4;
-  padding: 1dvh;
+  padding: 1rem;
   border-radius: 100px;
+  margin: 5px 5px 5px 5px;
 }
 
 .siteMenu{
@@ -98,10 +99,10 @@ main{
   color:rgb(255, 255, 255);
   background-color: rgb(233, 181, 49);
   text-align: left;
-  font-size: 4rem;
+  font-size: 2.5rem;
   font-weight: bold;
   text-align: center;
-  margin-top: 1rem;
+  margin: 5px 10px 15px 20px;
   cursor: pointer;
   padding: 1rem;
   border-radius: 10px;
