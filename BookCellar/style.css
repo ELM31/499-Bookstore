@@ -45,6 +45,7 @@ main{
 .userLogin {
   flex: 1;
   border-left: 2px rgb(129, 100, 25);
+
 }
 .userLogin button{
   display: block;
@@ -57,6 +58,7 @@ main{
   padding: 1rem;
   border-radius: 100px;
   margin: 5px 5px 5px 5px;
+  font-size: 1rem;
 }
 
 .siteMenu{
