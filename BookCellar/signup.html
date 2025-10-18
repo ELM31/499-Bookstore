@@ -15,17 +15,18 @@
 
     <div class="login-box">
         <h2>Create an Account</h2>
-        <form id="signupForm">
-            <input type="text" id="name" placeholder="Full Name" required>
-            <input type="email" id="email" placeholder="Email Address" required>
-            <input type="text" id="username" placeholder="Username" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+        <form id="signupForm" action ="handle_form" method = "post">
+            <label for="name">Username</label>
+            <input type="text" name="name" placeholder="Full Name" required>
+            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="text" name="Username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            
             <button type="submit">Sign Up</button>
         </form>
         <p>Already have an account? <a href="login.html">Login here</a></p>
     </div>
-
+   <!--
     <script>
         document.getElementById("signupForm").addEventListener("submit", function(event) {
             event.preventDefault();
@@ -47,6 +48,6 @@
             window.location.href = "login.html";  // Redirect to login page
         });
     </script>
-
+    -->
 </body>
 </html>
