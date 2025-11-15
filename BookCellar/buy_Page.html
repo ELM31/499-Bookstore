@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books - The Book Cellar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="books-container">
+        <h1>Available Books</h1>
+        <div id="loading">Loading books...</div>
+        <div id="booksGrid" class="books-grid"></div>
+    </div>
+
+    <script>
+        fetch('http://localhost:4000/buy_page_data')
+            .then(response => response.json())
+            .then(books => {
+                document.getElementById('loading').style.display = 'none';
+                
+                const booksGrid = document.getElementById('booksGrid');
+                
+                books.forEach(book => {
+                    const bookCard = document.createElement('div');
+                    bookCard.className = 'book-card';
+                    
+                    // Format the date
+                    const date = new Date(book.Publish_date);
+                    const formattedDate = date.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                    
+                    bookCard.innerHTML = `
+                        <img src="${book.photo}" alt="${book.Name_of_book}" class="book-image" 
+                             onerror="this.src='https://via.placeholder.com/250x350?text=No+Image'">
+                        <div class="book-info">
+                            <div class="book-title">${book.Name_of_book}</div>
+                            <div class="book-author">by ${book.Author}</div>
+                            <div class="book-description">${book.Description_of_book}</div>
+                            <div class="book-date">Published: ${formattedDate}</div>
+                        </div>
+                    `;
+                    
+                    booksGrid.appendChild(bookCard);
+                });
+            })
+            .catch(error => {
+                document.getElementById('loading').textContent = 'Error loading books: ' + error.message;
+            });
+    </script>
+</body>
+</html>

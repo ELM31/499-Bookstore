@@ -16,6 +16,7 @@ database.connect((error) => {
   }
   console.log("Database connected! ");
 });
+
 //middleware below
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
@@ -23,6 +24,21 @@ app.use(express.static(__dirname));
 app.get("/", (req, res) => {
   const html_login = path.join(__dirname, "signup.html");
   res.sendFile(html_login);
+});
+
+// Change the route name from /book_page to /buy_page_data
+app.get("/buy_page_data", (req, res) => {
+  const showAllBooks = "SELECT * FROM book"
+  database.query(showAllBooks, (err, data) => {
+    if(err) return res.json(err)
+    return res.json(data)
+  })
+})
+
+// Keep this route to serve the HTML page
+app.get("/buy_page", (req, res) => {
+  const html_buy = path.join(__dirname, "buy_Page.html");
+  res.sendFile(html_buy);
 });
 
 app.post("/handle_form", (req, res) => {
