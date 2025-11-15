@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sell a Book - The Book Cellar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="login-body">
+
+    <!-- Banner -->
+    <div onclick="window.location.href='BCLanding.html'" class="login-bodysiteName">
+        The Book Cellar
+    </div>
+
+    <div class="sell-box">
+        <h2>Sell Your Book</h2>
+
+        <form id="sellForm" action="/sell_book" method="POST">
+
+            <input type="text" name="title" placeholder="Book Title" required>
+
+            <input type="text" name="author" placeholder="Author" required>
+
+            <input type="number" name="price" placeholder="Price (USD)" required>
+
+            <textarea name="description" placeholder="Short Description" rows="4" required></textarea>
+
+            <label class="image-label">Upload Book Image (optional):</label>
+            <input type="file" name="img" accept="image/*">
+
+            <button type="submit">Submit Book for Sale</button>
+
+        </form>
+    </div>
+
+</body>
+</html>

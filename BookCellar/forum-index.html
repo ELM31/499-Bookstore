@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Forum Index - The Book Cellar</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="siteHead">
+        <a onclick="window.location.href='BCLanding.html'" class="siteName">
+            The Book Cellar
+        </a>
+        <div class="userLogin">
+            <button onclick="window.location.href='login.html'">Login</button>
+            <button onclick="window.location.href='signup.html'">Sign Up</button>
+        </div>
+    </header>
+
+    <div class="siteMenu">
+        <button onclick="window.location.href='book-catalog.html'">Buy</button> 
+        <button onclick="window.location.href='sell.html'">Sell</button>
+        <button>Request</button>
+        <button onclick="window.location.href='forum-index.html'">Forums</button>
+    </div>
+
+    <main class="forum-main-content">
+        <div class="forum-header">
+            <h1>The Book Cellar Community Forums</h1>
+            <button class="start-thread-btn" onclick="window.location.href='new-thread.html'">
+                + Start a New Discussion
+            </button>
+        </div>
+
+        <div class="forum-categories-list">
+            
+            <div class="category-group">
+                <h2 class="category-title">General Book Discussions</h2>
+                <div class="category-description">Talk about your favorite authors, new releases, and general book news.</div>
+                
+                <table class="forum-table">
+                    <thead>
+                        <tr>
+                            <th class="col-title">Forum Topic</th>
+                            <th class="col-stats">Threads</th>
+                            <th class="col-stats">Posts</th>
+                            <th class="col-last-post">Last Post</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-title">
+                                <a href="thread-list.html" class="forum-link">The Book Club Corner</a>
+                                <p class="sub-description">Discussions about the current book of the month.</p>
+                            </td>
+                            <td class="col-stats">15</td>
+                            <td class="col-stats">450</td>
+                            <td class="col-last-post">
+                                <span class="last-post-user">User: JohnDoe</span><br>
+                                <span class="last-post-date">Today, 5:30 PM</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">
+                                <a href="thread-list.html" class="forum-link">What's New?</a>
+                                <p class="sub-description">Chat about upcoming books and recent releases.</p>
+                            </td>
+                            <td class="col-stats">32</td>
+                            <td class="col-stats">981</td>
+                            <td class="col-last-post">
+                                <span class="last-post-user">User: BookLover2000</span><br>
+                                <span class="last-post-date">Yesterday, 10:15 AM</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> <div class="category-group">
+                <h2 class="category-title">Genre Specific</h2>
+                
+                <table class="forum-table">
+                    <tbody>
+                         <tr>
+                            <td class="col-title">
+                                <a href="thread-list.html" class="forum-link">Fantasy & Sci-Fi</a>
+                                <p class="sub-description">Dragons, starships, and magic systems.</p>
+                            </td>
+                            <td class="col-stats">112</td>
+                            <td class="col-stats">3540</td>
+                            <td class="col-last-post">
+                                <span class="last-post-user">User: ELM</span><br>
+                                <span class="last-post-date">5 minutes ago</span>
+                            </td>
+                        </tr>
+                         <tr>
+                            <td class="col-title">
+                                <a href="thread-list.html" class="forum-link">Mystery & Thriller</a>
+                                <p class="sub-description">Who dunnit? Spoilers encouraged!</p>
+                            </td>
+                            <td class="col-stats">58</td>
+                            <td class="col-stats">1980</td>
+                            <td class="col-last-post">
+                                <span class="last-post-user">User: SansUndertale</span><br>
+                                <span class="last-post-date">2 days ago</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> </div>
+    </main>
+</body>
+</html>

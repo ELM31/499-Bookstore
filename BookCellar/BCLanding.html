@@ -36,28 +36,82 @@
     <div
     class = siteMenu>
         <button>Buy</button>
-        <button>Sell</button>
+        <button
+        onclick="window.location.href='sell.html'">
+            Sell
+        </button>
         <button>Request</button>
-        <button>Forums</button>
+        <button
+        onclick="window.location.href='forum-index.html'">
+        Forums
+        </button>
     </div>
-    <main>
-        <!--Both forumPreview and forSalePreview will be populated with items js will pull from the database. Next
-        task is making a dummy databse so I can write the js for that. -->
-        <div
-        class = forumPreview>
-            <h1>
-                Top Forum Posts
-            </h1>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+<main class="landing-main">
+        <section class="hero-banner">
+            <h2>Welcome</h2>
+            <p>Your community for discovering and discussing your favorite reads.</p>
+            <button onclick="window.location.href='book-catalog.html'" class="hero-cta-btn">
+                Browse Our Collection
+            </button>
+        </section>
+
+        <div class="forSalePreview">
+            <h2>Book Previews</h2>
+            
+            <section class="book-preview-section">
+                <h3>Book of the Month</h3>
+                <div class="preview-item book-of-month">
+                    <img src="/BookCellar/resources/HerOneRegretImage.jpg" alt="Book of the Month Cover" class="preview-cover-large">
+                    <div class="item-details">
+                        <h4>Her One Regret</h4>
+                        <p class="author">By Donna Freitas</p>
+                        <p class="price">$15.99</p>
+                        <button class="preview-buy-btn">View Details</button>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="book-preview-section new-releases">
+                <h3>New Releases</h3>
+                <div class="book-list-row">
+                    <div class="preview-item">
+                        <img src="/BookCellar/resources/chainsawman20.webp" alt="New Release 1" class="preview-cover-small">
+                        <p class="preview-title">Chainsaw Man</p>
+                    </div>
+                    <div class="preview-item">
+                        <img src="/BookCellar/resources/curseddaughters.jpg" alt="New Release 2" class="preview-cover-small">
+                        <p class="preview-title">Cursed Daughters</p>
+                    </div>
+                    <div class="preview-item">
+                        <img src="/BookCellar/resources/TheStrengthOfFew.jpg" alt="New Release 3" class="preview-cover-small">
+                        <p class="preview-title">The Strength of the Few</p>
+                    </div>
+                </div>
+            </section>
         </div>
-        <div
-        class = forSalePreview>
-            <h2>Book of the Month</h2>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            <h3>New Releases</h3>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            <h4>On Sale!</h4>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+
+        <div class="forumPreview">
+            <h2>Top Forum Posts</h2>
+            <div class="forum-post-list">
+                <div class="forum-post-summary">
+                    <a href="thread-view.html">What's the most underrated fantasy series?</a>
+                    <p><span>In:</span> Fantasy & Sci-Fi</p>
+                    <p class="post-stats">12 replies | Last post by Bookworm</p>
+                </div>
+                <div class="forum-post-summary">
+                    <a href="thread-view.html">Looking for a trade: My copy of 'Dune' for 'Neuromancer'</a>
+                    <p><span>In:</span> Sell/Trade</p>
+                    <p class="post-stats">5 replies | Last post by TradeMaster</p>
+                </div>
+                <div class="forum-post-summary">
+                    <a href="thread-view.html">Book of the Month Voting - January</a>
+                    <p><span>In:</span> The Book Club Corner</p>
+                    <p class="post-stats">30 replies | Last post by Admin</p>
+                </div>
+            </div>
+            <button onclick="window.location.href='forum-index.html'" class="all-forums-btn">
+                View All Forums
+            </button>
         </div>
     </main>
 </body>

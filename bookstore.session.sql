@@ -1,0 +1,18 @@
+CREATE TABLE userdetails (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  fullName VARCHAR(255),
+  email VARCHAR(255) UNIQUE,
+  Username VARCHAR(255) UNIQUE,
+  pword VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE books_for_sale (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255),
+  author VARCHAR(255),
+  price DECIMAL(10,2),
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

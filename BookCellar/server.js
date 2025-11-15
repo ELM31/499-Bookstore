@@ -47,6 +47,28 @@ app.post("/handle_form", (req, res) => {
     console.send("registration Unsuccessful");
   }
 });
+
+//Sell book route 
+app.post("/sell_book", (req, res) => {
+  const { title, author, price, description } = req.body;
+
+  const sql = `
+    INSERT INTO books_for_sale (title, author, price, description)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  database.query(sql, [title, author, price, description], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.send("Book listing failed.");
+    }
+
+    console.log(result);
+    res.send("Your book has been submitted for review!");
+  });
+});
+
 app.listen(4000, () => {
   console.log("server listening...");
 });
+

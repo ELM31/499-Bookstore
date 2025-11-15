@@ -19,8 +19,6 @@ main{
 }
 
 .siteHead{
-    position: sticky;
-    top:0;
     padding: 10px top 15px;
     color:rgb(233, 181, 49);
     display: flex;
@@ -62,7 +60,6 @@ main{
 }
 
 .siteMenu{
-  position: sticky;
   display:flex;
 }
 .siteMenu button{
@@ -83,6 +80,246 @@ main{
   border-right: 2px rgb(129, 100, 25);
   height:100%;
   color:rgb(233, 181, 49);
+}
+
+/* --- Landing Page Styling --- */
+.landing-main {
+    display: flex;
+    flex-direction: column; /* Stack the sections vertically */
+    padding: 20px 5%;
+    gap: 30px; /* Space between main sections */
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Override existing main styles for new layout */
+main {
+    display: block; /* Ensures flex is handled by .landing-main */
+    height: auto;
+}
+
+/* Hero Banner Section */
+.hero-banner {
+    background-color: rgb(233, 181, 49); /* Gold background */
+    color: rgb(80, 46, 3); /* Dark brown text */
+    padding: 40px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.hero-banner h2 {
+    margin: 0 0 10px 0;
+    font-size: 2.5rem;
+}
+
+.hero-banner p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.hero-cta-btn {
+    background-color: rgb(80, 46, 3);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.hero-cta-btn:hover {
+    background-color: #603405; /* Slightly darker brown */
+}
+
+
+/* Content Area - Now split into two main columns */
+.forSalePreview {
+    flex: 2; /* Takes up more space */
+    color: rgb(233, 181, 49);
+    padding: 20px;
+    background-color: #333333; /* Dark background for book previews */
+    border-radius: 8px;
+}
+
+.forumPreview {
+    flex: 1; /* Takes up less space */
+    color: rgb(233, 181, 49);
+    padding: 20px;
+    background-color: #333333; /* Dark background for forum previews */
+    border-radius: 8px;
+    border-left: 2px solid rgb(129, 100, 25); /* Re-adding the separator */
+}
+
+/* Redefine main for a two-column layout AFTER the hero section */
+.landing-main {
+    /* Existing styles... */
+}
+
+.landing-main > .forSalePreview, 
+.landing-main > .forumPreview {
+    margin-top: 0;
+}
+
+/* Use Flexbox for two main columns on wider screens */
+@media (min-width: 900px) {
+    .landing-main {
+        flex-direction: column;
+    }
+    .landing-main > :not(.hero-banner) {
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+    }
+    .forSalePreview, .forumPreview {
+        /* Re-apply flex properties for two-column structure */
+        flex: 1; 
+        width: 50%; /* Adjust to share space */
+    }
+}
+
+
+/* Book Previews */
+.book-preview-section h3 {
+    border-bottom: 1px solid rgb(129, 100, 25);
+    padding-bottom: 5px;
+    margin-top: 15px;
+    color: white;
+}
+
+.preview-item {
+    display: flex;
+    align-items: center;
+    background-color: #444444;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+/* Book of the Month Styling */
+.book-of-month {
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 15px;
+}
+
+.preview-cover-large {
+    width: 150px;
+    height: auto;
+    object-fit: cover;
+    margin-right: 15px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.item-details h4 {
+    margin: 0;
+    color: rgb(233, 181, 49);
+    font-size: 1.5rem;
+}
+
+.item-details .author {
+    color: white;
+    font-style: italic;
+    margin: 5px 0;
+}
+
+.item-details .price {
+    font-weight: bold;
+    color: #a87932; /* Slightly different gold for price */
+}
+
+.preview-buy-btn {
+    background-color: rgb(80, 46, 3);
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* New Releases Row */
+.book-list-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.new-releases .preview-item {
+    flex-direction: column;
+    text-align: center;
+    flex: 1;
+    padding: 10px;
+}
+
+.preview-cover-small {
+    width: 100%;
+    max-width: 80px;
+    height: auto;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.preview-title {
+    font-size: 0.9em;
+    font-weight: bold;
+    color: rgb(233, 181, 49);
+}
+
+/* Forum Previews */
+.forum-post-list {
+    margin-top: 15px;
+}
+
+.forum-post-summary {
+    border-bottom: 1px dashed rgb(129, 100, 25);
+    padding: 10px 0;
+}
+
+.forum-post-summary:last-child {
+    border-bottom: none;
+}
+
+.forum-post-summary a {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 3px;
+    transition: color 0.2s;
+}
+
+.forum-post-summary a:hover {
+    color: rgb(233, 181, 49);
+}
+
+.forum-post-summary p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #ccc;
+}
+
+.forum-post-summary span {
+    font-style: italic;
+    color: rgb(233, 181, 49);
+}
+
+.all-forums-btn {
+    background-color: rgb(80, 46, 3);
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.all-forums-btn:hover {
+    background-color: #603405;
 }
 
 /* Login Page Styles */
@@ -152,6 +389,173 @@ main{
   text-decoration: underline;
 }
 
+
+.sell-box {
+  background-color: rgb(233, 181, 49);
+  color: black;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 350px;
+  text-align: center;
+  margin-top: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.sell-box input,
+.sell-box textarea {
+  display: block;
+  margin: 10px auto;
+  padding: 8px;
+  width: 90%;
+  border: 1px solid rgb(129, 100, 25);
+  border-radius: 5px;
+}
+
+.sell-box button {
+  background-color: rgb(80, 46, 3);
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.sell-box button:hover {
+  background-color: rgb(60, 34, 3);
+}
+
+.image-label {
+  margin-top: 10px;
+  display: block;
+  font-size: 0.9rem;
+  color: rgb(80, 46, 3);
+}
+
+
+/* Forum Index Page Styles --- */
+.forum-main-content {
+    padding: 20px 5%;
+    color: rgb(233, 181, 49);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.forum-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid rgb(129, 100, 25);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.forum-header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.start-thread-btn {
+    background-color: rgb(233, 181, 49); 
+    color: rgb(80, 46, 3); 
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.start-thread-btn:hover {
+    background-color: rgb(255, 204, 77); 
+}
+
+.category-group {
+    margin-bottom: 40px;
+}
+
+.category-title {
+    background-color: rgb(129, 100, 25); 
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px 5px 0 0;
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+.category-description {
+    color: #ccc; 
+    padding: 5px 15px 10px;
+    border-left: 1px solid rgb(129, 100, 25);
+    border-right: 1px solid rgb(129, 100, 25);
+    background-color: rgb(80, 46, 3); 
+}
+
+/* Forum Table Styles */
+.forum-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #333333; 
+}
+
+.forum-table th, .forum-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgb(129, 100, 25);
+    text-align: left;
+}
+
+.forum-table thead th {
+    background-color: rgb(80, 46, 3);
+    color: white;
+    font-weight: bold;
+}
+
+.forum-table tbody tr:hover {
+    background-color: #444444; 
+}
+
+.col-title {
+    width: 50%;
+}
+
+.forum-link {
+    color: rgb(233, 181, 49);
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 1.1em;
+}
+
+.forum-link:hover {
+    text-decoration: underline;
+    color: white;
+}
+
+.sub-description {
+    color: #aaa;
+    font-size: 0.9em;
+    margin: 5px 0 0;
+}
+
+.col-stats {
+    width: 10%;
+    text-align: center;
+    color: white;
+}
+
+.col-last-post {
+    width: 30%;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.last-post-user {
+    font-weight: bold;
+    color: rgb(233, 181, 49);
+}
+
+.last-post-date {
+    color: #ccc;
+}
 /*.FPItem{
 
 }
