@@ -7,13 +7,128 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Cart Button -->
+    <button class="cart-button" onclick="toggleCart()">
+        🛒 Cart <span class="cart-count" id="cartCount">0</span>
+    </button>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>Shopping Cart</h2>
+                <button class="close-cart" onclick="toggleCart()">×</button>
+            </div>
+            <div id="cartItems" class="cart-items"></div>
+            <div class="cart-total" id="cartTotal" style="display: none">
+                <h3>Total Items: <span id="totalCount">0</span></h3>
+            </div>
+            <button class="checkout-btn" onclick="goToCheckout()">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
     <div class="books-container">
-        <h1>Available Books</h1>
+        <h1>📚 Available Books</h1>
         <div id="loading">Loading books...</div>
         <div id="booksGrid" class="books-grid"></div>
     </div>
 
     <script>
+        // Simple cart stored in browser (no database)
+        let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+
+        // Update cart count display
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
+        }
+
+        // Toggle cart modal
+        function toggleCart() {
+            const modal = document.getElementById('cartModal');
+            modal.classList.toggle('active');
+            
+            if (modal.classList.contains('active')) {
+                displayCart();
+            }
+        }
+
+        // Add book to cart
+        function addToCart(book) {
+            const existingItem = cart.find(item => item.ISBN === book.ISBN);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+                alert(`"${book.Name_of_book}" quantity increased!`);
+            } else {
+                cart.push({
+                    ISBN: book.ISBN,
+                    Name_of_book: book.Name_of_book,
+                    Author: book.Author,
+                    photo: book.photo,
+                    quantity: 1
+                });
+                alert(`"${book.Name_of_book}" added to cart!`);
+            }
+            
+            // Save to sessionStorage
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            console.log("Cart updated:", cart);
+        }
+
+        // Remove item from cart
+        function removeFromCart(ISBN) {
+            cart = cart.filter(item => item.ISBN !== ISBN);
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            displayCart();
+        }
+
+        // Display cart items
+        function displayCart() {
+            const cartItemsDiv = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            const totalCount = document.getElementById('totalCount');
+
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<div class="empty-cart">Your cart is empty 🛒</div>';
+                cartTotal.style.display = 'none';
+                return;
+            }
+
+            cartTotal.style.display = 'block';
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            totalCount.textContent = totalItems;
+
+            cartItemsDiv.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <img src="${item.photo}" alt="${item.Name_of_book}" class="cart-item-image"
+                         onerror="this.src='https://via.placeholder.com/60x80?text=Book'">
+                    <div class="cart-item-info">
+                        <div class="cart-item-title">${item.Name_of_book}</div>
+                        <div class="cart-item-author">by ${item.Author}</div>
+                        <div class="cart-item-quantity">Quantity: ${item.quantity}</div>
+                    </div>
+                    <button class="remove-item" onclick="removeFromCart(${item.ISBN})">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        // Go to checkout page
+        function goToCheckout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            // Cart is already saved in sessionStorage
+            window.location.href = '/checkout';
+        }
+
+        // Load books from API
         fetch('http://localhost:4000/buy_page_data')
             .then(response => response.json())
             .then(books => {
@@ -25,22 +140,24 @@
                     const bookCard = document.createElement('div');
                     bookCard.className = 'book-card';
                     
-                    // Format the date
                     const date = new Date(book.Publish_date);
-                    const formattedDate = date.toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
+                    const formattedDate = date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
                     });
                     
                     bookCard.innerHTML = `
                         <img src="${book.photo}" alt="${book.Name_of_book}" class="book-image" 
-                             onerror="this.src='https://via.placeholder.com/250x350?text=No+Image'">
+                             onerror="this.src='https://via.placeholder.com/280x350?text=No+Image'">
                         <div class="book-info">
                             <div class="book-title">${book.Name_of_book}</div>
                             <div class="book-author">by ${book.Author}</div>
                             <div class="book-description">${book.Description_of_book}</div>
                             <div class="book-date">Published: ${formattedDate}</div>
+                            <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(book)})'>
+                                Add to Cart
+                            </button>
                         </div>
                     `;
                     
@@ -50,6 +167,9 @@
             .catch(error => {
                 document.getElementById('loading').textContent = 'Error loading books: ' + error.message;
             });
+
+        // Initialize cart count on page load
+        updateCartCount();
     </script>
 </body>
 </html>
