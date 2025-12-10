@@ -4,6 +4,7 @@ const session = require("express-session");
 const app = express();
 const mysql2 = require("mysql2");
 const bcrypt = require('bcrypt');
+const multer = require('multer');
 
 const database = mysql2.createConnection({
   host: "127.0.0.1",
@@ -19,9 +20,46 @@ database.connect((error) => {
   console.log("Database connected!");
 });
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, 'bookImages')) // Changed to bookImages
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = Date.now() + '-' + file.originalname;
+    cb(null, uniqueName);
+  }
+});
+
+// File filter to only accept images
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'), false);
+  }
+};
+
+const upload = multer({ 
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Important for cart API
+// Add error handling middleware for multer
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    console.error("Multer error:", err);
+    return res.status(400).json({ error: 'File upload error: ' + err.message });
+  } else if (err) {
+    console.error("Other error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+  next();
+});
+
 
 // Session setup for user login
 app.use(session({
@@ -69,6 +107,7 @@ app.get("/buy_page", (req, res) => {
 
 
 // LOGIN ROUTE
+// LOGIN ROUTE - UPDATED
 app.post("/login", async (req, res) => {
   console.log("=== LOGIN ATTEMPT ===");
   console.log("Request body:", req.body);
@@ -79,7 +118,8 @@ app.post("/login", async (req, res) => {
     return res.status(400).json({ error: "Username and password required" });
   }
   
-  const sql = "SELECT UserID, First_name, Last_name, Username, pword FROM user WHERE Username = ?";
+  // UPDATED: Include user_type in the SELECT query
+  const sql = "SELECT UserID, First_name, Last_name, Username, pword, user_type FROM user WHERE Username = ?";
   
   database.query(sql, [Username], async (err, results) => {
     if (err) {
@@ -100,10 +140,11 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
     
-    // SET SESSION DATA
+    // SET SESSION DATA - UPDATED to include user_type
     req.session.UserID = user.UserID;
     req.session.Username = user.Username;
     req.session.fullName = `${user.First_name} ${user.Last_name}`;
+    req.session.user_type = user.user_type; // ADD THIS
     
     // SAVE SESSION EXPLICITLY
     req.session.save((err) => {
@@ -119,13 +160,13 @@ app.post("/login", async (req, res) => {
         user: {
           UserID: user.UserID,
           Username: user.Username,
-          fullName: `${user.First_name} ${user.Last_name}`
+          fullName: `${user.First_name} ${user.Last_name}`,
+          user_type: user.user_type // ADD THIS
         }
       });
     });
   });
 });
-
 
 
 
@@ -146,6 +187,7 @@ app.post("/logout", (req, res) => {
 
 
 // CHECK LOGIN STATUS
+// CHECK LOGIN STATUS - UPDATED
 app.get("/check_auth", (req, res) => {
   if (req.session.UserID) {
     res.json({ 
@@ -153,14 +195,14 @@ app.get("/check_auth", (req, res) => {
       user: {
         UserID: req.session.UserID,
         Username: req.session.Username,
-        fullName: req.session.fullName
+        fullName: req.session.fullName,
+        user_type: req.session.user_type // ADD THIS
       }
     });
   } else {
     res.json({ authenticated: false });
   }
 });
-
 
 
 
@@ -297,37 +339,23 @@ app.post("/handle_form", async (req, res) => {
     console.log("=== SIGNUP ATTEMPT ===");
     console.log("Request body:", req.body);
     
-    const { Username, First_name, Last_name, DOB, email, password } = req.body;
+    const { Username, First_name, Last_name, DOB, email, password, user_type } = req.body;
     
-    console.log("\n📝 Extracted Values:");
-    console.log("Username:", Username, "| Length:", Username?.length);
-    console.log("First_name:", First_name, "| Length:", First_name?.length);
-    console.log("Last_name:", Last_name, "| Length:", Last_name?.length);
-    console.log("DOB:", DOB);
-    console.log("email:", email, "| Length:", email?.length);
-    console.log("password:", password, "| Length:", password?.length);
-    
-    if (!Username || !First_name || !Last_name || !DOB || !email || !password) {
+    if (!Username || !First_name || !Last_name || !DOB || !email || !password || !user_type) {
       console.log("❌ Missing required fields");
       return res.status(400).send("All fields are required");
     }
     
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("✅ Hashed password length:", hashedPassword.length);
     
-    const sql = "INSERT INTO user (Username, First_name, Last_name, DOB, Email, pword) VALUES (?, ?, ?, ?, ?, ?)";
+    // UPDATED SQL - now includes user_type
+    const sql = "INSERT INTO user (Username, First_name, Last_name, DOB, Email, pword, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
     
-    const values = [Username, First_name, Last_name, DOB, email, hashedPassword];
-    console.log("\n💾 Values to insert:", values);
-    console.log("Value lengths:", values.map(v => v?.length || 'N/A'));
+    const values = [Username, First_name, Last_name, DOB, email, hashedPassword, user_type];
     
     database.query(sql, values, (err, result) => {
       if (err) {
-        console.error("\n❌ DATABASE ERROR:");
-        console.error("Error code:", err.code);
-        console.error("Error message:", err.message);
-        console.error("SQL state:", err.sqlState);
-        console.error("Full error:", err);
+        console.error("\n❌ DATABASE ERROR:", err);
         
         if (err.code === 'ER_DUP_ENTRY') {
           return res.status(400).send("Username or email already exists");
@@ -346,24 +374,90 @@ app.post("/handle_form", async (req, res) => {
   }
 });
 
+// Sell book route
+app.post("/sell_book", isAuthenticated, upload.single('bookImage'), (req, res) => {
+  console.log("=== SELL BOOK REQUEST ===");
+  console.log("Body:", req.body);
+  console.log("File:", req.file);
+  console.log("Session UserID:", req.session.UserID);
+  
+  try {
+    const { title, author, price, description } = req.body;
+    const seller_id = req.session.UserID;
+    
+    if (!title || !author || !price || !description) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+    
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required" });
+    }
+    
+    const photo = `bookImages/${req.file.filename}`;
+    console.log("Photo path:", photo);
 
-// Sell book route 
-app.post("/sell_book", (req, res) => {
-  const { title, author, price, description } = req.body;
+    // Generate a unique ISBN-like number
+    const fakeISBN = Date.now();
 
-  const sql = `
-    INSERT INTO books_for_sale (title, author, price, description)
-    VALUES (?, ?, ?, ?)
-  `;
+    // STEP 1: Insert into books_for_sale (tracking table)
+    const sqlForSale = `
+      INSERT INTO books_for_sale (seller_id, title, author, price, description, photo, status)
+      VALUES (?, ?, ?, ?, ?, ?, 'approved')
+    `;
 
-  database.query(sql, [title, author, price, description], (err, result) => {
+    database.query(sqlForSale, [seller_id, title, author, price, description, photo], (err, result) => {
+      if (err) {
+        console.error("❌ DATABASE ERROR (books_for_sale):", err);
+        return res.status(500).json({ error: "Database error: " + err.message });
+      }
+
+      console.log("✅ Added to books_for_sale! ID:", result.insertId);
+
+      // STEP 2: Also insert into main book table (so it shows on buy page)
+      const sqlBook = `
+        INSERT INTO book (ISBN, Name_of_book, Author, Description_of_book, photo, price)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
+
+      database.query(sqlBook, [fakeISBN, title, author, description, photo, price], (err2, result2) => {
+        if (err2) {
+          console.error("❌ DATABASE ERROR (book):", err2);
+          return res.status(500).json({ error: "Failed to add to store: " + err2.message });
+        }
+
+        console.log("✅ Added to main book table! ISBN:", fakeISBN);
+        
+        res.json({ 
+          success: true, 
+          message: "Your book has been listed and is now available for purchase!",
+          photo: photo,
+          ISBN: fakeISBN
+        });
+      });
+    });
+  } catch (error) {
+    console.error("❌ CATCH ERROR:", error);
+    return res.status(500).json({ error: "Server error: " + error.message });
+  }
+});
+
+
+
+
+
+
+// Get seller's own listings
+app.get("/my_listings", isAuthenticated, (req, res) => {
+  const seller_id = req.session.UserID;
+  
+  const sql = "SELECT * FROM books_for_sale WHERE seller_id = ? ORDER BY created_at DESC";
+  
+  database.query(sql, [seller_id], (err, results) => {
     if (err) {
       console.error(err);
-      return res.send("Book listing failed.");
+      return res.status(500).json({ error: "Failed to get listings" });
     }
-
-    console.log(result);
-    res.send("Your book has been submitted for review!");
+    res.json(results);
   });
 });
 

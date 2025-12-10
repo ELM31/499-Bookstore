@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sell Your Books - The Book Cellar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header matching your site style -->
+    <div class="siteHead">
+        <div class="siteName" onclick="window.location.href='BCLanding.html'">
+            The Book Cellar
+        </div>
+        <div class="userLogin">
+            <button onclick="window.location.href='buy_Page.html'">Buy Books</button>
+            <button onclick="window.location.href='sell_page.html'">Sell Books</button>
+            <button id="logoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div style="background-color: rgb(80, 46, 3); min-height: 100vh; padding: 20px;">
+        
+        <!-- Sell Book Form -->
+        <div class="login-box" style="max-width: 600px; margin: 30px auto;">
+            <h2>List Your Book for Sale</h2>
+            
+            <form id="sellBookForm" enctype="multipart/form-data">
+                <input type="text" name="title" placeholder="Book Title" required>
+                <input type="text" name="author" placeholder="Author Name" required>
+                <input type="number" name="price" placeholder="Price ($)" step="0.01" min="0" required>
+                
+                <textarea name="description" placeholder="Book Description & Condition" required 
+                          style="width: 90%; padding: 10px; margin: 10px auto; display: block; border: 1px solid rgb(129, 100, 25); border-radius: 5px; min-height: 100px; font-family: inherit;"></textarea>
+                
+                <!-- NEW: File upload input -->
+                <label for="bookImage" style="color: rgb(80, 46, 3); display: block; margin: 10px auto; text-align: left; width: 90%; font-weight: bold;">
+                    Upload Book Image:
+                </label>
+                <input type="file" 
+                       id="bookImage" 
+                       name="bookImage" 
+                       accept="image/*" 
+                       required
+                       style="width: 90%; padding: 10px; margin: 10px auto; display: block; border: 1px solid rgb(129, 100, 25); border-radius: 5px; background: white;">
+                
+                <!-- Image Preview -->
+                <div id="imagePreview" style="width: 90%; margin: 10px auto; display: none; text-align: center;">
+                    <img id="previewImg" style="max-width: 200px; max-height: 300px; border-radius: 5px; border: 2px solid rgb(129, 100, 25);">
+                </div>
+                
+                <button type="submit">Submit Book for Review</button>
+            </form>
+
+            <div id="message" style="margin-top: 20px; padding: 10px; display: none; border-radius: 5px;"></div>
+        </div>
+
+        <!-- Your Listed Books -->
+        <div class="login-box" style="max-width: 900px; margin: 30px auto;">
+            <h2>Your Listed Books</h2>
+            <div id="myListings" style="margin-top: 20px;"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // Image preview functionality
+        document.getElementById('bookImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Check if user is logged in
+        fetch('/check_auth')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.authenticated) {
+                    alert('Please log in first');
+                    window.location.href = 'login.html';
+                }
+            });
+
+        // Handle form submission with FILE UPLOAD
+        document.getElementById('sellBookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Use FormData directly (NOT JSON) for file uploads
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/sell_book', {
+                    method: 'POST',
+                    body: formData // Send FormData directly, NO headers!
+                });
+                
+                const result = await response.json();
+                const messageDiv = document.getElementById('message');
+                
+                if (response.ok) {
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.backgroundColor = '#d4edda';
+                    messageDiv.style.color = '#155724';
+                    messageDiv.style.border = '1px solid #c3e6cb';
+                    messageDiv.textContent = result.message;
+                    e.target.reset();
+                    document.getElementById('imagePreview').style.display = 'none';
+                    loadMyListings();
+                } else {
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.backgroundColor = '#f8d7da';
+                    messageDiv.style.color = '#721c24';
+                    messageDiv.style.border = '1px solid #f5c6cb';
+                    messageDiv.textContent = result.error;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to submit book');
+            }
+        });
+
+        // Load user's listings with images
+        async function loadMyListings() {
+            try {
+                const response = await fetch('/my_listings');
+                const listings = await response.json();
+                
+                const container = document.getElementById('myListings');
+                
+                if (listings.length === 0) {
+                    container.innerHTML = '<p style="color: rgb(80, 46, 3); text-align: center;">You haven\'t listed any books yet.</p>';
+                    return;
+                }
+                
+                container.innerHTML = listings.map(book => {
+                    let statusColor = 'orange';
+                    if (book.status === 'approved') statusColor = 'green';
+                    if (book.status === 'rejected') statusColor = 'red';
+                    if (book.status === 'sold') statusColor = 'blue';
+                    
+                    return `
+                        <div style="background: white; border: 2px solid rgb(129, 100, 25); padding: 15px; margin: 15px 0; border-radius: 8px;">
+                            <div style="display: flex; gap: 15px; align-items: start;">
+                                ${book.photo ? 
+                                    `<img src="${book.photo}" style="width: 120px; height: 160px; object-fit: cover; border-radius: 5px; border: 1px solid rgb(129, 100, 25);">` 
+                                    : 
+                                    '<div style="width: 120px; height: 160px; background: #ddd; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px; text-align: center;">No Image</div>'
+                                }
+                                <div style="flex: 1;">
+                                    <h3 style="color: rgb(80, 46, 3); margin: 0 0 10px 0;">${book.title}</h3>
+                                    <p style="color: #666; margin: 5px 0;"><strong>Author:</strong> ${book.author}</p>
+                                    <p style="color: #666; margin: 5px 0;"><strong>Price:</strong> $${parseFloat(book.price).toFixed(2)}</p>
+                                    <p style="color: #666; margin: 5px 0;"><strong>Description:</strong> ${book.description}</p>
+                                </div>
+                                <div style="text-align: center;">
+                                    <span style="background: ${statusColor}; color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; text-transform: uppercase; font-size: 0.9em;">
+                                        ${book.status}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading listings:', error);
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await fetch('/logout', { method: 'POST' });
+            window.location.href = 'login.html';
+        });
+
+        // Load listings on page load
+        loadMyListings();
+    </script>
+</body>
+</html>

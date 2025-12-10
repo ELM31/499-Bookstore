@@ -106,97 +106,67 @@
             renderCart();
         });
 
-        function renderCart() {
-            const cartContainer = document.getElementById('cartItems');
-            const emptyCart = document.getElementById('emptyCart');
-            
-            if (cart.length === 0) {
-                cartContainer.innerHTML = '';
-                emptyCart.style.display = 'block';
-                updateTotals();
-                return;
-            }
+function renderCart() {
 
-            emptyCart.style.display = 'none';
-            cartContainer.innerHTML = cart.map((item, index) => `
-                <div class="cart-item">
-                    <div class="item-info">
-                        <h3>${item.name}</h3>
-                        <p>by ${item.author}</p>
-                        <p class="item-price">$${item.price.toFixed(2)}</p>
-                    </div>
-                    <div class="item-controls">
-                        <button onclick="updateQuantity(${index}, -1)">-</button>
-                        <span class="quantity">${item.quantity}</span>
-                        <button onclick="updateQuantity(${index}, 1)">+</button>
-                        <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
-                    </div>
-                </div>
-            `).join('');
+    console.log("Cart data:", cart);
+    console.log("Cart length:", cart.length);
+    if (cart.length > 0) {
+        console.log("First item:", cart[0]);
+        console.log("First item price:", cart[0].price);
+        console.log("First item price type:", typeof cart[0].price);
+    }
 
-            updateTotals();
-        }
+    const cartContainer = document.getElementById('cartItems');
+    const emptyCart = document.getElementById('emptyCart');
+    
+    if (cart.length === 0) {
+        cartContainer.innerHTML = '';
+        emptyCart.style.display = 'block';
+        updateTotals();
+        return;
+    }
 
-        function updateQuantity(index, change) {
-            cart[index].quantity += change;
-            if (cart[index].quantity < 1) {
-                cart[index].quantity = 1;
-            }
-            sessionStorage.setItem('cart', JSON.stringify(cart));
-            renderCart();
-        }
+    emptyCart.style.display = 'none';
+    cartContainer.innerHTML = cart.map((item, index) => `
+        <div class="cart-item">
+            <img src="${item.photo}" alt="${item.Name_of_book}" 
+                 onerror="this.src='https://via.placeholder.com/60x80?text=Book'"
+                 style="width: 60px; height: 80px; object-fit: cover; margin-right: 15px;">
+            <div class="item-info">
+                <h3>${item.Name_of_book}</h3>
+                <p>by ${item.Author}</p>
+                <p class="item-price">$${Number(item.price || 0).toFixed(2)}</p>
+            </div>
+            <div class="item-controls">
+                <button onclick="updateQuantity(${index}, -1)">-</button>
+                <span class="quantity">${item.quantity}</span>
+                <button onclick="updateQuantity(${index}, 1)">+</button>
+                <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+            </div>
+        </div>
+    `).join('');
 
-        function removeItem(index) {
-            cart.splice(index, 1);
-            sessionStorage.setItem('cart', JSON.stringify(cart));
-            renderCart();
-        }
+    updateTotals();
+}
 
-        function updateTotals() {
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const tax = subtotal * 0.08;
-            const total = subtotal + tax;
+function updateQuantity(index, change) {
+    cart[index].quantity += change;
+    if (cart[index].quantity < 1) {
+        cart[index].quantity = 1;
+    }
+    sessionStorage.setItem('cart', JSON.stringify(cart));
+    renderCart();
+}
 
-            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
-            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
-        }
+function updateTotals() {
+    const subtotal = cart.reduce((sum, item) => sum + (Number(item.price || 0) * item.quantity), 0);
+    const tax = subtotal * 0.08;
+    const total = subtotal + tax;
 
-        function placeOrder() {
-            // Validate forms
-            const checkoutForm = document.getElementById('checkoutForm');
-            const paymentForm = document.getElementById('paymentForm');
-
-            if (!checkoutForm.checkValidity()) {
-                checkoutForm.reportValidity();
-                return;
-            }
-
-            if (!paymentForm.checkValidity()) {
-                paymentForm.reportValidity();
-                return;
-            }
-
-            if (cart.length === 0) {
-                alert('Your cart is empty!');
-                return;
-            }
-
-            // Simulate order processing
-            const total = document.getElementById('total').textContent;
-            
-            alert(`Order placed successfully!\n\nTotal: ${total}\n\nThank you for shopping at The Book Cellar!`);
-            
-            // Clear cart
-            cart = [];
-            sessionStorage.removeItem('cart');
-            renderCart();
-
-            // Redirect to home page after delay
-            setTimeout(() => {
-                window.location.href = '/buy_page';
-            }, 2000);
-        }
+    document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+    document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+}
 
         // Format card number with spaces
         document.getElementById('cardNumber').addEventListener('input', function(e) {

@@ -22,35 +22,40 @@
     </div>
     
     <script>
-        document.getElementById("loginForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
-            
-            const formData = new FormData(event.target);
-            const Username = formData.get('Username');
-            const password = formData.get('password');
-            
-            try {
-                const response = await fetch('/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ Username, password })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    alert('Login successful!');
-                    window.location.href = '/buy_page';  // Redirect to books page
-                } else {
-                    alert(data.error || 'Login failed');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                alert('Login failed. Please try again.');
-            }
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+    
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
         });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            // REDIRECT BASED ON USER TYPE
+            if (result.user.user_type === 'seller') {
+                window.location.href = 'sell_page.html';
+            } else if (result.user.user_type === 'both') {
+                // You can choose where to send "both" users - maybe a dashboard?
+                window.location.href = 'buy_Page.html'; // or create a dashboard.html
+            } else {
+                // buyer
+                window.location.href = 'buy_Page.html';
+            }
+        } else {
+            alert(result.error || 'Login failed');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Login failed');
+    }
+});
     </script>
 </body>
 </html>

@@ -64,11 +64,12 @@
                 alert(`"${book.Name_of_book}" quantity increased!`);
             } else {
                 cart.push({
-                    ISBN: book.ISBN,
                     Name_of_book: book.Name_of_book,
-                    Author: book.Author,
+                    ISBN: book.ISBN,
                     photo: book.photo,
-                    quantity: 1
+                    Author: book.Author,
+                    quantity: 1,
+                    price: book.price, 
                 });
                 alert(`"${book.Name_of_book}" added to cart!`);
             }
@@ -129,44 +130,59 @@
         }
 
         // Load books from API
-        fetch('http://localhost:4000/buy_page_data')
-            .then(response => response.json())
-            .then(books => {
-                document.getElementById('loading').style.display = 'none';
-                
-                const booksGrid = document.getElementById('booksGrid');
-                
-                books.forEach(book => {
-                    const bookCard = document.createElement('div');
-                    bookCard.className = 'book-card';
-                    
-                    const date = new Date(book.Publish_date);
-                    const formattedDate = date.toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    });
-                    
-                    bookCard.innerHTML = `
-                        <img src="${book.photo}" alt="${book.Name_of_book}" class="book-image" 
-                             onerror="this.src='https://via.placeholder.com/280x350?text=No+Image'">
-                        <div class="book-info">
-                            <div class="book-title">${book.Name_of_book}</div>
-                            <div class="book-author">by ${book.Author}</div>
-                            <div class="book-description">${book.Description_of_book}</div>
-                            <div class="book-date">Published: ${formattedDate}</div>
-                            <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(book)})'>
-                                Add to Cart
-                            </button>
-                        </div>
-                    `;
-                    
-                    booksGrid.appendChild(bookCard);
-                });
-            })
-            .catch(error => {
-                document.getElementById('loading').textContent = 'Error loading books: ' + error.message;
+        // Load books from API
+fetch('http://localhost:4000/buy_page_data')
+    .then(response => {
+        console.log("Response received:", response);
+        return response.json();
+    })
+    .then(books => {
+        console.log("Books data:", books);
+        console.log("Number of books:", books.length);
+        if (books.length > 0) {
+            console.log("First book:", books[0]);
+            console.log("First book price:", books[0].price);
+        }
+        
+        document.getElementById('loading').style.display = 'none';
+        
+        const booksGrid = document.getElementById('booksGrid');
+        
+        books.forEach(book => {
+            console.log("Processing book:", book.Name_of_book, "Price:", book.price);
+            
+            const bookCard = document.createElement('div');
+            bookCard.className = 'book-card';
+            
+            const date = new Date(book.Publish_date);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
             });
+            
+            bookCard.innerHTML = `
+                <img src="${book.photo}" alt="${book.Name_of_book}" class="book-image" 
+                     onerror="this.src='https://via.placeholder.com/280x350?text=No+Image'">
+                <div class="book-info">
+                    <div class="book-title">${book.Name_of_book}</div>
+                    <div class="book-author">by ${book.Author}</div>
+                    <div class="book-price">$${Number(book.price || 0).toFixed(2)}</div>
+                    <div class="book-description">${book.Description_of_book}</div>
+                    <div class="book-date">Published: ${formattedDate}</div>
+                    <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(book)})'>
+                        Add to Cart
+                    </button>
+                </div>
+            `;
+            
+            booksGrid.appendChild(bookCard);
+        });
+    })
+    .catch(error => {
+        console.error("ERROR:", error);
+        document.getElementById('loading').textContent = 'Error loading books: ' + error.message;
+    });
 
         // Initialize cart count on page load
         updateCartCount();
