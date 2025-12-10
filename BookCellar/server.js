@@ -1,3 +1,6 @@
+// Load environment variables FIRST
+require('dotenv').config();
+
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
@@ -5,6 +8,12 @@ const app = express();
 const mysql2 = require("mysql2");
 const bcrypt = require('bcrypt');
 const multer = require('multer');
+const OpenAI = require('openai'); // NEW: OpenAI import
+
+// NEW: Initialize OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
 const database = mysql2.createConnection({
   host: "127.0.0.1",
@@ -80,6 +89,41 @@ function isAuthenticated(req, res, next) {
     next();
   } else {
     res.status(401).json({ error: 'Please log in first' });
+  }
+}
+
+// ============================================
+// NEW: AI SUMMARY GENERATION FUNCTION
+// ============================================
+async function generateBookSummary(title, author, description = '') {
+  try {
+    console.log(`🤖 Generating AI summary for: ${title} by ${author}`);
+    
+    const prompt = description 
+      ? `Write a brief, engaging 2-3 sentence summary for a book titled "${title}" by ${author}. Here's some context: ${description}`
+      : `Write a brief, engaging 2-3 sentence summary for a book titled "${title}" by ${author}. Make it sound interesting to potential buyers.`;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{
+        role: "system",
+        content: "You are a helpful book reviewer who writes concise, engaging summaries that make people want to read books. Keep summaries to 2-3 sentences."
+      }, {
+        role: "user",
+        content: prompt
+      }],
+      max_tokens: 150,
+      temperature: 0.7
+    });
+
+    const summary = completion.choices[0].message.content.trim();
+    console.log(`✅ AI Summary generated: ${summary}`);
+    return summary;
+    
+  } catch (error) {
+    console.error('❌ OpenAI API Error:', error.message);
+    // Return a fallback summary if API fails
+    return `"${title}" by ${author} - An engaging read for book lovers.`;
   }
 }
 
@@ -374,8 +418,10 @@ app.post("/handle_form", async (req, res) => {
   }
 });
 
-// Sell book route
-app.post("/sell_book", isAuthenticated, upload.single('bookImage'), (req, res) => {
+// ============================================
+// UPDATED: Sell book route WITH AI SUMMARY
+// ============================================
+app.post("/sell_book", isAuthenticated, upload.single('bookImage'), async (req, res) => {
   console.log("=== SELL BOOK REQUEST ===");
   console.log("Body:", req.body);
   console.log("File:", req.file);
@@ -399,13 +445,18 @@ app.post("/sell_book", isAuthenticated, upload.single('bookImage'), (req, res) =
     // Generate a unique ISBN-like number
     const fakeISBN = Date.now();
 
-    // STEP 1: Insert into books_for_sale (tracking table)
+    // NEW: Generate AI summary
+    console.log("🤖 Generating AI summary...");
+    const aiSummary = await generateBookSummary(title, author, description);
+    console.log("✅ AI Summary:", aiSummary);
+
+    // STEP 1: Insert into books_for_sale (tracking table) - NOW WITH AI SUMMARY
     const sqlForSale = `
-      INSERT INTO books_for_sale (seller_id, title, author, price, description, photo, status)
-      VALUES (?, ?, ?, ?, ?, ?, 'approved')
+      INSERT INTO books_for_sale (seller_id, title, author, price, description, photo, ai_summary, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'approved')
     `;
 
-    database.query(sqlForSale, [seller_id, title, author, price, description, photo], (err, result) => {
+    database.query(sqlForSale, [seller_id, title, author, price, description, photo, aiSummary], (err, result) => {
       if (err) {
         console.error("❌ DATABASE ERROR (books_for_sale):", err);
         return res.status(500).json({ error: "Database error: " + err.message });
@@ -427,11 +478,13 @@ app.post("/sell_book", isAuthenticated, upload.single('bookImage'), (req, res) =
 
         console.log("✅ Added to main book table! ISBN:", fakeISBN);
         
+        // NEW: Return AI summary in response
         res.json({ 
           success: true, 
-          message: "Your book has been listed and is now available for purchase!",
+          message: "Your book has been listed with an AI-generated summary!",
           photo: photo,
-          ISBN: fakeISBN
+          ISBN: fakeISBN,
+          ai_summary: aiSummary // NEW: Send AI summary back to client
         });
       });
     });
@@ -446,7 +499,7 @@ app.post("/sell_book", isAuthenticated, upload.single('bookImage'), (req, res) =
 
 
 
-// Get seller's own listings
+// Get seller's own listings - UPDATED TO INCLUDE AI SUMMARY
 app.get("/my_listings", isAuthenticated, (req, res) => {
   const seller_id = req.session.UserID;
   
@@ -461,6 +514,48 @@ app.get("/my_listings", isAuthenticated, (req, res) => {
   });
 });
 
+// NEW: Optional route to regenerate AI summary for existing books
+app.post("/regenerate_summary/:book_id", isAuthenticated, async (req, res) => {
+  try {
+    const { book_id } = req.params;
+    const seller_id = req.session.UserID;
+    
+    // Get book details
+    const getBookQuery = "SELECT title, author, description FROM books_for_sale WHERE book_id = ? AND seller_id = ?";
+    
+    database.query(getBookQuery, [book_id, seller_id], async (err, results) => {
+      if (err || results.length === 0) {
+        return res.status(404).json({ error: 'Book not found or not authorized' });
+      }
+      
+      const book = results[0];
+      const newSummary = await generateBookSummary(book.title, book.author, book.description);
+      
+      // Update the summary
+      const updateQuery = 'UPDATE books_for_sale SET ai_summary = ? WHERE book_id = ? AND seller_id = ?';
+      
+      database.query(updateQuery, [newSummary, book_id, seller_id], (err) => {
+        if (err) {
+          return res.status(500).json({ error: 'Failed to update summary' });
+        }
+        
+        res.json({ 
+          success: true, 
+          ai_summary: newSummary 
+        });
+      });
+    });
+  } catch (error) {
+    console.error('Error regenerating summary:', error);
+    res.status(500).json({ error: 'Failed to regenerate summary' });
+  }
+});
+
 app.listen(4000, () => {
   console.log("server listening on port 4000...");
+  console.log("🤖 OpenAI integration active!");
+  if (!process.env.OPENAI_API_KEY) {
+    console.warn("⚠️  WARNING: OPENAI_API_KEY not found in environment variables!");
+    console.warn("   Please create a .env file with your OpenAI API key");
+  }
 });

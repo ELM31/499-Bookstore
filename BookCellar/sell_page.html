@@ -2,184 +2,417 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sell Your Books - The Book Cellar</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Books - The Book Cellar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #8B4513 0%, #D4AF37 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #D4AF37;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .login-box {
+            background: rgba(139, 69, 19, 0.9);
+            border: 3px solid #D4AF37;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #D4AF37;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #D4AF37;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-family: 'Georgia', serif;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #D4AF37;
+            color: #8B4513;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Georgia', serif;
+        }
+
+        button:hover {
+            background: #FFD700;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            border: 2px solid #4CAF50;
+        }
+
+        .error-message {
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            border: 2px solid #f44336;
+        }
+
+        .ai-summary-box {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .ai-summary-box h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .ai-summary-box p {
+            color: #333;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .books-list {
+            margin-top: 40px;
+        }
+
+        .book-card {
+            background: rgba(139, 69, 19, 0.9);
+            border: 2px solid #D4AF37;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .book-image {
+            width: 150px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #D4AF37;
+        }
+
+        .book-details {
+            color: #D4AF37;
+        }
+
+        .book-details h3 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .book-details p {
+            margin-bottom: 8px;
+        }
+
+        .book-summary {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #4CAF50;
+            padding: 10px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            color: #D4AF37;
+            padding: 20px;
+            font-size: 18px;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: #FFD700;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            float: right;
+            margin-bottom: 20px;
+        }
+
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header matching your site style -->
-    <div class="siteHead">
-        <div class="siteName" onclick="window.location.href='BCLanding.html'">
-            The Book Cellar
-        </div>
-        <div class="userLogin">
-            <button onclick="window.location.href='buy_Page.html'">Buy Books</button>
-            <button onclick="window.location.href='sell_page.html'">Sell Books</button>
-            <button id="logoutBtn">Logout</button>
-        </div>
-    </div>
+    <div class="container">
+        <button class="logout-btn" onclick="logout()">Logout</button>
+        <h1>📚 Sell Your Books</h1>
 
-    <!-- Main Content Area -->
-    <div style="background-color: rgb(80, 46, 3); min-height: 100vh; padding: 20px;">
-        
-        <!-- Sell Book Form -->
-        <div class="login-box" style="max-width: 600px; margin: 30px auto;">
-            <h2>List Your Book for Sale</h2>
-            
-            <form id="sellBookForm" enctype="multipart/form-data">
-                <input type="text" name="title" placeholder="Book Title" required>
-                <input type="text" name="author" placeholder="Author Name" required>
-                <input type="number" name="price" placeholder="Price ($)" step="0.01" min="0" required>
-                
-                <textarea name="description" placeholder="Book Description & Condition" required 
-                          style="width: 90%; padding: 10px; margin: 10px auto; display: block; border: 1px solid rgb(129, 100, 25); border-radius: 5px; min-height: 100px; font-family: inherit;"></textarea>
-                
-                <!-- NEW: File upload input -->
-                <label for="bookImage" style="color: rgb(80, 46, 3); display: block; margin: 10px auto; text-align: left; width: 90%; font-weight: bold;">
-                    Upload Book Image:
-                </label>
-                <input type="file" 
-                       id="bookImage" 
-                       name="bookImage" 
-                       accept="image/*" 
-                       required
-                       style="width: 90%; padding: 10px; margin: 10px auto; display: block; border: 1px solid rgb(129, 100, 25); border-radius: 5px; background: white;">
-                
-                <!-- Image Preview -->
-                <div id="imagePreview" style="width: 90%; margin: 10px auto; display: none; text-align: center;">
-                    <img id="previewImg" style="max-width: 200px; max-height: 300px; border-radius: 5px; border: 2px solid rgb(129, 100, 25);">
+        <div class="success-message" id="successMessage"></div>
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="login-box">
+            <h2 style="color: #FFD700; margin-bottom: 20px;">List a New Book</h2>
+            <form id="addBookForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">Book Title *</label>
+                    <input type="text" id="title" name="title" required>
                 </div>
-                
-                <button type="submit">Submit Book for Review</button>
+
+                <div class="form-group">
+                    <label for="author">Author *</label>
+                    <input type="text" id="author" name="author" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description *</label>
+                    <textarea id="description" name="description" required placeholder="Provide details about the book. This will help generate a better AI summary..."></textarea>
+                    <p class="helper-text">💡 A good description helps AI create an accurate summary</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Price ($) *</label>
+                    <input type="number" id="price" name="price" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bookImage">Book Image *</label>
+                    <input type="file" id="bookImage" name="bookImage" accept="image/*" required>
+                </div>
+
+                <button type="submit" id="submitBtn">✨ Add Book & Generate AI Summary</button>
+
+                <div class="ai-summary-box" id="aiSummaryBox">
+                    <h3><span class="ai-badge">AI</span> Generated Summary</h3>
+                    <p id="aiSummaryText"></p>
+                </div>
             </form>
-
-            <div id="message" style="margin-top: 20px; padding: 10px; display: none; border-radius: 5px;"></div>
         </div>
 
-        <!-- Your Listed Books -->
-        <div class="login-box" style="max-width: 900px; margin: 30px auto;">
-            <h2>Your Listed Books</h2>
-            <div id="myListings" style="margin-top: 20px;"></div>
+        <div class="books-list">
+            <h2 style="color: #FFD700; margin-bottom: 20px;">Your Listed Books</h2>
+            <div id="booksContainer">
+                <div class="loading">Loading your books...</div>
+            </div>
         </div>
-
     </div>
 
     <script>
-        // Image preview functionality
-        document.getElementById('bookImage').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('previewImg').src = e.target.result;
-                    document.getElementById('imagePreview').style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Check if user is logged in
-        fetch('/check_auth')
-            .then(res => res.json())
-            .then(data => {
-                if (!data.authenticated) {
-                    alert('Please log in first');
-                    window.location.href = 'login.html';
-                }
-            });
-
-        // Handle form submission with FILE UPLOAD
-        document.getElementById('sellBookForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Use FormData directly (NOT JSON) for file uploads
-            const formData = new FormData(e.target);
-            
+        // Check authentication on page load
+        async function checkAuth() {
             try {
-                const response = await fetch('/sell_book', {
-                    method: 'POST',
-                    body: formData // Send FormData directly, NO headers!
-                });
+                const response = await fetch('/check_auth');
+                const data = await response.json();
                 
-                const result = await response.json();
-                const messageDiv = document.getElementById('message');
-                
-                if (response.ok) {
-                    messageDiv.style.display = 'block';
-                    messageDiv.style.backgroundColor = '#d4edda';
-                    messageDiv.style.color = '#155724';
-                    messageDiv.style.border = '1px solid #c3e6cb';
-                    messageDiv.textContent = result.message;
-                    e.target.reset();
-                    document.getElementById('imagePreview').style.display = 'none';
-                    loadMyListings();
-                } else {
-                    messageDiv.style.display = 'block';
-                    messageDiv.style.backgroundColor = '#f8d7da';
-                    messageDiv.style.color = '#721c24';
-                    messageDiv.style.border = '1px solid #f5c6cb';
-                    messageDiv.textContent = result.error;
+                if (!data.authenticated || data.user.user_type !== 'seller') {
+                    window.location.href = '/login.html';
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to submit book');
-            }
-        });
-
-        // Load user's listings with images
-        async function loadMyListings() {
-            try {
-                const response = await fetch('/my_listings');
-                const listings = await response.json();
-                
-                const container = document.getElementById('myListings');
-                
-                if (listings.length === 0) {
-                    container.innerHTML = '<p style="color: rgb(80, 46, 3); text-align: center;">You haven\'t listed any books yet.</p>';
-                    return;
-                }
-                
-                container.innerHTML = listings.map(book => {
-                    let statusColor = 'orange';
-                    if (book.status === 'approved') statusColor = 'green';
-                    if (book.status === 'rejected') statusColor = 'red';
-                    if (book.status === 'sold') statusColor = 'blue';
-                    
-                    return `
-                        <div style="background: white; border: 2px solid rgb(129, 100, 25); padding: 15px; margin: 15px 0; border-radius: 8px;">
-                            <div style="display: flex; gap: 15px; align-items: start;">
-                                ${book.photo ? 
-                                    `<img src="${book.photo}" style="width: 120px; height: 160px; object-fit: cover; border-radius: 5px; border: 1px solid rgb(129, 100, 25);">` 
-                                    : 
-                                    '<div style="width: 120px; height: 160px; background: #ddd; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px; text-align: center;">No Image</div>'
-                                }
-                                <div style="flex: 1;">
-                                    <h3 style="color: rgb(80, 46, 3); margin: 0 0 10px 0;">${book.title}</h3>
-                                    <p style="color: #666; margin: 5px 0;"><strong>Author:</strong> ${book.author}</p>
-                                    <p style="color: #666; margin: 5px 0;"><strong>Price:</strong> $${parseFloat(book.price).toFixed(2)}</p>
-                                    <p style="color: #666; margin: 5px 0;"><strong>Description:</strong> ${book.description}</p>
-                                </div>
-                                <div style="text-align: center;">
-                                    <span style="background: ${statusColor}; color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; text-transform: uppercase; font-size: 0.9em;">
-                                        ${book.status}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (error) {
-                console.error('Error loading listings:', error);
+                console.error('Auth check error:', error);
+                window.location.href = '/login.html';
             }
         }
 
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await fetch('/logout', { method: 'POST' });
-            window.location.href = 'login.html';
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/logout', { method: 'POST' });
+                window.location.href = '/login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Load seller's books using the correct route: /my_listings
+        async function loadBooks() {
+            try {
+                const response = await fetch('/my_listings');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch books');
+                }
+                
+                const books = await response.json();
+                const container = document.getElementById('booksContainer');
+                
+                if (books.length === 0) {
+                    container.innerHTML = '<p style="color: #D4AF37; text-align: center;">No books listed yet. Add your first book above!</p>';
+                    return;
+                }
+
+                container.innerHTML = books.map(book => `
+                    <div class="book-card">
+                        <img src="${book.photo || '/bookImages/default.jpg'}" 
+                             alt="${book.title}" 
+                             class="book-image"
+                             onerror="this.src='/bookImages/default.jpg'">
+                        <div class="book-details">
+                            <h3>${book.title}</h3>
+                            <p><strong>Author:</strong> ${book.author}</p>
+                            <p><strong>Price:</strong> $${parseFloat(book.price).toFixed(2)}</p>
+                            <p><strong>Status:</strong> ${book.status || 'pending'}</p>
+                            ${book.description ? `<p><strong>Description:</strong> ${book.description}</p>` : ''}
+                            ${book.ai_summary ? `
+                                <div class="book-summary">
+                                    <strong style="color: #4CAF50;">🤖 AI Summary:</strong><br>
+                                    ${book.ai_summary}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading books:', error);
+                document.getElementById('booksContainer').innerHTML = 
+                    '<p style="color: #ff6b6b; text-align: center;">Error loading books. Please refresh the page.</p>';
+            }
+        }
+
+        // Add book form submission using the correct route: /sell_book
+        document.getElementById('addBookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const aiSummaryBox = document.getElementById('aiSummaryBox');
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            // Hide previous messages
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+            aiSummaryBox.style.display = 'none';
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = '🤖 Generating AI Summary...';
+            
+            try {
+                const formData = new FormData(e.target);
+                
+                const response = await fetch('/sell_book', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show AI summary if available
+                    if (data.ai_summary) {
+                        document.getElementById('aiSummaryText').textContent = data.ai_summary;
+                        aiSummaryBox.style.display = 'block';
+                    }
+                    
+                    // Show success message
+                    successMsg.textContent = data.message;
+                    successMsg.style.display = 'block';
+                    
+                    // Reset form
+                    e.target.reset();
+                    
+                    // Reload books list
+                    await loadBooks();
+                    
+                    // Scroll to AI summary
+                    if (data.ai_summary) {
+                        aiSummaryBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                } else {
+                    errorMsg.textContent = data.error || 'Failed to add book';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorMsg.textContent = 'Error adding book. Please try again.';
+                errorMsg.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✨ Add Book & Generate AI Summary';
+            }
         });
 
-        // Load listings on page load
-        loadMyListings();
+        // Check authentication and load books on page load
+        checkAuth();
+        loadBooks();
     </script>
 </body>
 </html>
